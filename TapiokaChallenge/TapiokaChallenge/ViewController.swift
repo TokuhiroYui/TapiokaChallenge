@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     let motionManager = CMMotionManager()
     var speedX : CGFloat = 0.0
     var speedY : CGFloat = 0.0
-    var imageView:UIImageView!
+    var imageView = UIImageView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,8 +23,9 @@ class ViewController: UIViewController {
         let image = UIImage.init(named: "tapioka1")
         imageView = UIImageView.init(image: image)
         imageView.center = self.view.center
+        // タッチ操作を enable
+        imageView.isUserInteractionEnabled = true
         self.view.addSubview(imageView)
-        
         
         if motionManager.isAccelerometerAvailable {
             // 加速度センサーの値取得間隔
@@ -71,5 +72,43 @@ class ViewController: UIViewController {
         imageView.center = CGPoint(x:posX, y:posY)
     }
     
+    // 画面にタッチで呼ばれる
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("touchesBegan")
+        
+    }
+    //　ドラッグ時に呼ばれる
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // タッチイベントを取得
+        let touchEvent = touches.first!
+        
+        // ドラッグ前の座標, Swift 1.2 から
+        let preDx = touchEvent.previousLocation(in: self.view).x
+        let preDy = touchEvent.previousLocation(in: self.view).y
+        
+        // ドラッグ後の座標
+        let newDx = touchEvent.location(in: self.view).x
+        let newDy = touchEvent.location(in: self.view).y
+        
+        // ドラッグしたx座標の移動距離
+        let dx = newDx - preDx
+        print("x:\(dx)")
+        
+        // ドラッグしたy座標の移動距離
+        let dy = newDy - preDy
+        print("y:\(dy)")
+        
+        // 画像のフレーム
+        var viewFrame: CGRect = imageView.frame
+        
+        // 移動分を反映させる
+        viewFrame.origin.x += dx
+        viewFrame.origin.y += dy
+        
+        imageView.frame = viewFrame
+        
+        self.view.addSubview(imageView)
+        
+    }
+    
 }
-
